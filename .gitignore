@@ -1,0 +1,30 @@
+# Entorno virtual
+venv/
+
+# Variables de entorno
+.env
+
+# Base de datos
+data/*.db
+
+# Logs
+logs/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# VS Code
+.vscode/
+
+# Python egg
+*.egg-info/
+dist/
+build/
+
+# pytest
+.pytest_cache/
+.coverage
+htmlcov/
