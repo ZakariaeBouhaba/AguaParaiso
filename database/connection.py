@@ -9,27 +9,65 @@ from utils.logger import Logger
 
 
 class Database:
-    """Gestiona la conexión con la base de datos SQLite3."""
+    """
+    Gestiona la conexión con la base de datos SQLite3.
+    
+    Implementa el patrón Singleton para garantizar que existe
+    una única instancia de conexión en todo el sistema. Activa
+    las claves foráneas con PRAGMA foreign_keys = ON y configura
+    row_factory para acceder a las columnas por nombre.
+    
+    Attributes:
+        _instancia: Instancia única de la clase (Singleton).
+        __ruta_db (str): Ruta absoluta al archivo de base de datos.
+        __conexion: Conexión SQLite3 activa.
+    """
 
     _instancia = None
 
     def __init__(self):
+        """Inicializa la base de datos con la ruta al archivo .db."""
         self.__ruta_db = self.__obtener_ruta()
         self.__conexion = None
 
     @classmethod
     def obtener_instancia(cls):
-        """Patrón Singleton — una sola conexión en todo el sistema."""
+        """
+        Devuelve la instancia única de la base de datos (Singleton).
+        
+        Crea la instancia en el primer acceso y la reutiliza
+        en todas las llamadas posteriores.
+        
+        Returns:
+            Database: Instancia única de la base de datos.
+        """
         if cls._instancia is None:
             cls._instancia = cls()
         return cls._instancia
 
     def __obtener_ruta(self):
+        """
+        Calcula la ruta absoluta al archivo de base de datos.
+        
+        Returns:
+            str: Ruta absoluta a data/aguaparaiso.db.
+        """
         base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         return os.path.join(base, 'data', 'aguaparaiso.db')
 
     def conectar(self):
-        """Abre la conexión con la base de datos."""
+        """
+        Abre la conexión con la base de datos SQLite3.
+        
+        Activa las claves foráneas y configura row_factory para
+        acceder a los resultados por nombre de columna.
+        
+        Returns:
+            sqlite3.Connection: Conexión activa a la base de datos.
+            
+        Raises:
+            sqlite3.Error: Si no se puede establecer la conexión.
+        """
         try:
             self.__conexion = sqlite3.connect(self.__ruta_db)
             self.__conexion.execute("PRAGMA foreign_keys = ON")
@@ -40,13 +78,29 @@ class Database:
             raise
 
     def desconectar(self):
-        """Cierra la conexión con la base de datos."""
+        """Cierra la conexión con la base de datos si está abierta."""
         if self.__conexion:
             self.__conexion.close()
             self.__conexion = None
 
     def ejecutar(self, query, params=()):
-        """Ejecuta una consulta SQL y hace commit."""
+        """
+        Ejecuta una consulta SQL de escritura con commit automático.
+        
+        Abre la conexión, ejecuta la query con los parámetros,
+        hace commit y cierra la conexión. En caso de error hace
+        rollback y registra el error en el log.
+        
+        Args:
+            query (str): Consulta SQL a ejecutar.
+            params (tuple): Parámetros para la consulta parametrizada.
+            
+        Returns:
+            sqlite3.Cursor: Cursor con lastrowid disponible.
+            
+        Raises:
+            sqlite3.Error: Si ocurre un error en la ejecución.
+        """
         try:
             conn = self.conectar()
             cursor = conn.cursor()
@@ -61,7 +115,19 @@ class Database:
             self.desconectar()
 
     def consultar(self, query, params=()):
-        """Ejecuta una consulta SELECT y devuelve los resultados."""
+        """
+        Ejecuta una consulta SELECT y devuelve todos los resultados.
+        
+        Args:
+            query (str): Consulta SELECT a ejecutar.
+            params (tuple): Parámetros para la consulta parametrizada.
+            
+        Returns:
+            list: Lista de filas como objetos sqlite3.Row accesibles por nombre.
+            
+        Raises:
+            sqlite3.Error: Si ocurre un error en la consulta.
+        """
         try:
             conn = self.conectar()
             cursor = conn.cursor()
@@ -74,7 +140,19 @@ class Database:
             self.desconectar()
 
     def consultar_uno(self, query, params=()):
-        """Ejecuta una consulta SELECT y devuelve un solo resultado."""
+        """
+        Ejecuta una consulta SELECT y devuelve un único resultado.
+        
+        Args:
+            query (str): Consulta SELECT a ejecutar.
+            params (tuple): Parámetros para la consulta parametrizada.
+            
+        Returns:
+            sqlite3.Row | None: Fila resultado o None si no hay resultados.
+            
+        Raises:
+            sqlite3.Error: Si ocurre un error en la consulta.
+        """
         try:
             conn = self.conectar()
             cursor = conn.cursor()

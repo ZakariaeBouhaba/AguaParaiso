@@ -1,5 +1,5 @@
 # ============================================
-# AguaParaíso - Motor de eventos aleatorios
+# AguaParaíso - Motor de Eventos Aleatorios
 # Sistema ERP SmartPark Pro
 # ============================================
 
@@ -10,7 +10,20 @@ from utils.logger import Logger
 
 
 class EventsEngine:
-    """Motor de eventos aleatorios del parque."""
+    """
+    Motor de generación de eventos aleatorios del parque.
+    
+    Implementa un sistema de probabilidades configurable desde
+    config.ini para simular incidencias reales del parque como
+    averías, eventos climáticos, incidentes sanitarios y
+    problemas de stock.
+    
+    Las probabilidades configurables son:
+    - Avería: 5% por defecto
+    - Climático: 3% por defecto
+    - Sanitario: 2% por defecto
+    - Stock: 10% por defecto
+    """
 
     DESCRIPCIONES = {
         'Averia': [
@@ -38,7 +51,20 @@ class EventsEngine:
 
     @classmethod
     def generar_evento(cls, zonas_activas):
-        """Genera un evento aleatorio basado en probabilidades."""
+        """
+        Genera un evento aleatorio basado en probabilidades configuradas.
+        
+        Obtiene las probabilidades desde config.ini y genera un número
+        aleatorio entre 0 y 1 para determinar si se produce un evento
+        y de qué tipo. Selecciona aleatoriamente una zona activa y una
+        descripción del catálogo de descripciones predefinidas.
+        
+        Args:
+            zonas_activas (list): Lista de IDs de zonas con estado Abierta.
+            
+        Returns:
+            Evento | None: Objeto Evento si se genera uno, None en caso contrario.
+        """
         probabilidades = Settings.probabilidades_eventos()
         numero = random.random()
         acumulado = 0.0
@@ -56,7 +82,22 @@ class EventsEngine:
 
     @classmethod
     def procesar_evento(cls, evento, db):
-        """Guarda el evento en la base de datos."""
+        """
+        Persiste un evento generado en la base de datos SQLite.
+        
+        Inserta el evento en la tabla eventos y actualiza el ID
+        del objeto con el lastrowid devuelto por SQLite.
+        
+        Args:
+            evento (Evento): Objeto evento a persistir.
+            db (Database): Instancia de la base de datos.
+            
+        Returns:
+            Evento: El mismo evento con el ID asignado por la BD.
+            
+        Raises:
+            Exception: Si ocurre un error al insertar en la BD.
+        """
         try:
             query = """
                 INSERT INTO eventos (tipo, descripcion, id_zona, estado, fecha_inicio)
