@@ -57,6 +57,28 @@ class ParqueTematico:
 
     def total_visitantes(self):
         return sum(z.aforo_actual for z in self.__zonas.values())
+    def obtener_tipos_zonas(self):
+        """Devuelve los tipos únicos de zonas usando set."""
+        return set(zona.tipo for zona in self.__zonas.values())
+
+    def obtener_zonas_ordenadas_por_aforo(self):
+        """Devuelve las zonas ordenadas por ocupación descendente."""
+        return sorted(
+        self.__zonas.values(),
+        key=lambda z: z.aforo_actual,
+        reverse=True
+    )
+
+    def obtener_zonas_disponibles(self):
+        """Filtra y devuelve solo las zonas disponibles."""
+        return list(filter(
+        lambda z: z.esta_disponible(),
+        self.__zonas.values()
+    ))
+
+    def obtener_zonas_por_tipo(self, tipo):
+        """Filtra zonas por tipo usando comprensión de lista."""
+        return [z for z in self.__zonas.values() if z.tipo == tipo]
 
     def __str__(self):
         return (f"Parque: {self.__nombre} | "

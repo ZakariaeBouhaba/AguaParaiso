@@ -75,6 +75,39 @@ class ReportingController:
             Logger.error(f"Error al obtener empleados: {e}")
             raise
 
+    def zonas_unicas_con_eventos(self):
+        """Devuelve zonas únicas que tienen eventos activos usando set."""
+        try:
+            eventos = self.__db.consultar(
+                "SELECT DISTINCT id_zona FROM eventos WHERE estado = 'Activo' AND id_zona IS NOT NULL"
+            )
+            return set(e['id_zona'] for e in eventos)
+        except Exception as e:
+            Logger.error(f"Error al obtener zonas con eventos: {e}")
+            raise
+
+    def tickets_ordenados_por_precio(self):
+        """Devuelve tickets ordenados por precio descendente."""
+        try:
+            tickets = self.__db.consultar(
+                "SELECT * FROM tickets ORDER BY precio_total DESC"
+            )
+            return sorted(tickets, key=lambda t: t['precio_total'], reverse=True)
+        except Exception as e:
+            Logger.error(f"Error al ordenar tickets: {e}")
+            raise
+
+    def empleados_filtrados_por_rol(self, rol):
+        """Filtra empleados activos por rol."""
+        try:
+            empleados = self.__db.consultar(
+                "SELECT * FROM empleados WHERE estado = 'Activo'"
+            )
+            return list(filter(lambda e: e['rol'] == rol, empleados))
+        except Exception as e:
+            Logger.error(f"Error al filtrar empleados: {e}")
+            raise
+
     def resumen_dia(self, fecha=None):
         """Devuelve un resumen completo del día."""
         try:
