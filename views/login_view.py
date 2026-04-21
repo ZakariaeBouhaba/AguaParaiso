@@ -26,27 +26,35 @@ class LoginView(ctk.CTk):
 
     def __configurar_ventana(self):
         self.title("AguaParaíso — SmartPark Pro")
-        self.geometry("500x600")
+        self.geometry("500x650")
         self.resizable(False, False)
         ctk.set_appearance_mode("light")
         ctk.set_default_color_theme("blue")
         self.configure(fg_color="#F0F8FF")
 
     def __construir_ui(self):
+        # Logo
+        try:
+            logo_img = Image.open("assets/images/logo.png").resize((80, 80))
+            logo_ctk = ctk.CTkImage(logo_img, size=(80, 80))
+            ctk.CTkLabel(self, image=logo_ctk, text="").pack(pady=(30, 5))
+        except Exception:
+            pass
+
         # Título
         ctk.CTkLabel(
             self,
-            text="🌊 AguaParaíso",
+            text="AguaParaíso",
             font=("Arial", 32, "bold"),
             text_color="#1A6B9A"
-        ).pack(pady=(60, 5))
+        ).pack(pady=(5, 2))
 
         ctk.CTkLabel(
             self,
             text="SmartPark Pro — Sistema ERP",
             font=("Arial", 14),
             text_color="#555555"
-        ).pack(pady=(0, 40))
+        ).pack(pady=(0, 25))
 
         # Frame login
         frame = ctk.CTkFrame(self, corner_radius=15, fg_color="white",
@@ -106,7 +114,7 @@ class LoginView(ctk.CTk):
             text="Instituto Tecnológico Granada · 2026",
             font=("Arial", 10),
             text_color="#AAAAAA"
-        ).pack(pady=(30, 0))
+        ).pack(pady=(20, 0))
 
     def __login(self):
         username = self.__entry_user.get().strip()
