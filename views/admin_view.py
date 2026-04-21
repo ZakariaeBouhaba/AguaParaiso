@@ -27,16 +27,17 @@ class AdminView(ctk.CTkFrame):
             text_color="#1A6B9A"
         ).pack(pady=(20, 10), padx=20, anchor="w")
 
-        # Tabs
         self.__tabs = ctk.CTkTabview(self, fg_color="white")
         self.__tabs.pack(fill="both", expand=True, padx=20, pady=10)
 
         self.__tabs.add("Empleados")
         self.__tabs.add("Alta empleado")
+        self.__tabs.add("Baja empleado")
         self.__tabs.add("Nóminas")
 
         self.__construir_tab_empleados()
         self.__construir_tab_alta()
+        self.__construir_tab_baja()
         self.__construir_tab_nominas()
 
     def __construir_tab_empleados(self):
@@ -143,6 +144,105 @@ class AdminView(ctk.CTkFrame):
             self.__cargar_empleados()
         except Exception as e:
             self.__lbl_alta.configure(
+                text=f"❌ Error: {e}",
+                text_color="#E74C3C"
+            )
+
+    def __construir_tab_baja(self):
+        tab = self.__tabs.tab("Baja empleado")
+
+        frame = ctk.CTkFrame(tab, fg_color="transparent")
+        frame.pack(fill="both", expand=True, padx=20, pady=10)
+
+        ctk.CTkLabel(
+            frame,
+            text="Introduce el ID del empleado a dar de baja",
+            font=("Arial", 13),
+            text_color="#555555"
+        ).pack(pady=(20, 10))
+
+        ctk.CTkLabel(frame, text="ID Empleado",
+                     font=("Arial", 12), anchor="w").pack(fill="x", pady=(10, 2))
+        self.__entry_baja_id = ctk.CTkEntry(
+            frame, placeholder_text="Ej: 5",
+            font=("Arial", 12), height=38
+        )
+        self.__entry_baja_id.pack(fill="x", pady=(2, 10))
+
+        # Mostrar datos del empleado
+        self.__frame_preview = ctk.CTkFrame(frame, fg_color="#F7FBFE",
+                                             corner_radius=8, border_width=1,
+                                             border_color="#D6EAF8")
+        self.__frame_preview.pack(fill="x", pady=10)
+
+        self.__lbl_preview = ctk.CTkLabel(
+            self.__frame_preview,
+            text="Introduce un ID para ver los datos del empleado",
+            font=("Arial", 11),
+            text_color="#AAAAAA"
+        )
+        self.__lbl_preview.pack(pady=15)
+
+        ctk.CTkButton(
+            frame,
+            text="🔍 Buscar empleado",
+            font=("Arial", 12),
+            fg_color="#1A6B9A",
+            height=38,
+            command=self.__buscar_empleado_baja
+        ).pack(fill="x", pady=5)
+
+        self.__lbl_baja = ctk.CTkLabel(frame, text="", font=("Arial", 11))
+        self.__lbl_baja.pack(pady=5)
+
+        ctk.CTkButton(
+            frame,
+            text="❌ Confirmar baja",
+            font=("Arial", 13, "bold"),
+            fg_color="#922B21",
+            hover_color="#CB4335",
+            height=42,
+            command=self.__dar_baja
+        ).pack(fill="x", pady=10)
+
+    def __buscar_empleado_baja(self):
+        try:
+            id_emp = int(self.__entry_baja_id.get())
+            empleado = self.__controller.obtener_empleado(id_emp)
+            if empleado:
+                self.__lbl_preview.configure(
+                    text=f"Nombre: {empleado['nombre']}\n"
+                         f"Rol: {empleado['rol']} | Categoría: {empleado['categoria']}\n"
+                         f"Estado actual: {empleado['estado']}",
+                    text_color="#2C3E50"
+                )
+            else:
+                self.__lbl_preview.configure(
+                    text="❌ Empleado no encontrado",
+                    text_color="#E74C3C"
+                )
+        except Exception as e:
+            self.__lbl_preview.configure(
+                text=f"❌ Error: {e}",
+                text_color="#E74C3C"
+            )
+
+    def __dar_baja(self):
+        try:
+            id_emp = int(self.__entry_baja_id.get())
+            self.__controller.baja_empleado(id_emp)
+            self.__lbl_baja.configure(
+                text=f"✅ Empleado {id_emp} dado de baja correctamente",
+                text_color="#1E8449"
+            )
+            self.__cargar_empleados()
+            self.__lbl_preview.configure(
+                text="Introduce un ID para ver los datos del empleado",
+                text_color="#AAAAAA"
+            )
+            self.__entry_baja_id.delete(0, "end")
+        except Exception as e:
+            self.__lbl_baja.configure(
                 text=f"❌ Error: {e}",
                 text_color="#E74C3C"
             )
