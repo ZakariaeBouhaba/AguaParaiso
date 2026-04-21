@@ -9,13 +9,33 @@ from utils.events_engine import EventsEngine
 
 
 class EventoController:
-    """Gestiona los eventos aleatorios del parque."""
+    """
+    Controlador del módulo de eventos aleatorios.
+    
+    Gestiona la generación automática de eventos basados en
+    probabilidades configurables, su persistencia en la base de
+    datos y su resolución por parte del personal técnico.
+    
+    Attributes:
+        __db: Instancia singleton de la base de datos.
+    """
 
     def __init__(self):
+        """Inicializa el controlador con la conexión a la base de datos."""
         self.__db = Database.obtener_instancia()
 
     def generar_evento_aleatorio(self):
-        """Genera y guarda un evento aleatorio."""
+        """
+        Genera un evento aleatorio basado en probabilidades configuradas.
+        
+        Obtiene las zonas abiertas, genera un número aleatorio y lo
+        compara con las probabilidades definidas en config.ini para
+        determinar si se genera un evento y de qué tipo.
+        
+        Returns:
+            Evento | None: El evento generado y persistido, o None si
+                          no se generó ningún evento en esta iteración.
+        """
         try:
             zonas = self.__db.consultar(
                 "SELECT id_zona FROM zonas WHERE estado = 'Abierta'"
@@ -30,7 +50,15 @@ class EventoController:
             raise
 
     def obtener_eventos_activos(self):
-        """Devuelve todos los eventos activos."""
+        """
+        Devuelve todos los eventos con estado Activo.
+        
+        Utiliza LEFT JOIN con zonas para incluir el nombre de zona
+        incluso cuando el evento no está asociado a una zona específica.
+        
+        Returns:
+            list: Lista de eventos activos ordenados por fecha descendente.
+        """
         try:
             query = """
                 SELECT e.*, z.nombre as zona_nombre
@@ -45,7 +73,12 @@ class EventoController:
             raise
 
     def obtener_todos_eventos(self):
-        """Devuelve todos los eventos."""
+        """
+        Devuelve todos los eventos del sistema independientemente del estado.
+        
+        Returns:
+            list: Lista completa de eventos ordenados por fecha descendente.
+        """
         try:
             query = """
                 SELECT e.*, z.nombre as zona_nombre
@@ -59,7 +92,16 @@ class EventoController:
             raise
 
     def resolver_evento(self, id_evento, id_empleado=None):
-        """Marca un evento como resuelto."""
+        """
+        Marca un evento como resuelto y registra la fecha de resolución.
+        
+        El trigger tr_evento_resuelto de la base de datos actualiza
+        automáticamente la fecha_fin al cambiar el estado a Resuelto.
+        
+        Args:
+            id_evento (int): ID del evento a resolver.
+            id_empleado (int, optional): ID del empleado que resuelve el evento.
+        """
         try:
             query = """
                 UPDATE eventos

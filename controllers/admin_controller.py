@@ -11,13 +11,30 @@ from exceptions.exceptions import DatosInvalidosError
 
 
 class AdminController:
-    """Gestiona altas, bajas y nóminas de empleados."""
+    """
+    Controlador del módulo administrativo.
+    
+    Gestiona las altas y bajas de empleados, el cálculo de nóminas
+    con IRPF y bonus de temporada alta, y la consulta de registros
+    de recursos humanos.
+    
+    Attributes:
+        __db: Instancia singleton de la base de datos.
+    """
 
     def __init__(self):
+        """Inicializa el controlador con la conexión a la base de datos."""
         self.__db = Database.obtener_instancia()
 
     def obtener_empleados(self):
-        """Devuelve todos los empleados."""
+        """
+        Devuelve todos los empleados con el nombre de su zona asignada.
+        
+        Utiliza JOIN entre empleados y zonas para enriquecer los datos.
+        
+        Returns:
+            list: Lista de empleados ordenados alfabéticamente por nombre.
+        """
         try:
             query = """
                 SELECT e.*, z.nombre as zona_nombre
@@ -31,7 +48,15 @@ class AdminController:
             raise
 
     def obtener_empleado(self, id_empleado):
-        """Devuelve un empleado por ID."""
+        """
+        Devuelve un empleado por su ID.
+        
+        Args:
+            id_empleado (int): ID único del empleado.
+            
+        Returns:
+            dict | None: Datos del empleado o None si no existe.
+        """
         try:
             query = "SELECT * FROM empleados WHERE id_empleado = ?"
             return self.__db.consultar_uno(query, (id_empleado,))
@@ -40,7 +65,27 @@ class AdminController:
             raise
 
     def alta_empleado(self, datos):
-        """Da de alta un nuevo empleado y crea su usuario."""
+        """
+        Da de alta un nuevo empleado en el sistema.
+        
+        Valida los datos del formulario antes de persistir en la BD.
+        
+        Args:
+            datos (dict): Diccionario con los campos del empleado:
+                - nombre (str): Nombre completo.
+                - rol (str): Rol en el parque.
+                - categoria (str): Junior, Senior o Jefe.
+                - turno (str): Manana, Tarde o Mantenimiento.
+                - id_zona (int): ID de la zona asignada.
+                - sueldo_base (float): Sueldo base mensual en euros.
+                - contrato (str): Fijo o Temporal.
+                
+        Returns:
+            int: ID del empleado recién creado.
+            
+        Raises:
+            DatosInvalidosError: Si los datos no pasan la validación.
+        """
         try:
             Validators.validar_texto(datos['nombre'], 'nombre')
             Validators.validar_numero_positivo(datos['sueldo_base'], 'sueldo_base')
@@ -66,7 +111,15 @@ class AdminController:
             raise
 
     def baja_empleado(self, id_empleado):
-        """Da de baja a un empleado."""
+        """
+        Da de baja a un empleado y deshabilita su usuario del sistema.
+        
+        Actualiza el estado del empleado a 'Baja' y bloquea su acceso
+        al sistema ERP deshabilitando su usuario asociado.
+        
+        Args:
+            id_empleado (int): ID del empleado a dar de baja.
+        """
         try:
             query = "UPDATE empleados SET estado = 'Baja' WHERE id_empleado = ?"
             self.__db.ejecutar(query, (id_empleado,))
@@ -81,7 +134,24 @@ class AdminController:
             raise
 
     def calcular_nomina(self, id_empleado, mes, horas_extra=0, descuentos=0.0):
-        """Calcula y guarda la nómina de un empleado."""
+        """
+        Calcula y registra la nómina mensual de un empleado.
+        
+        Aplica el IRPF según la categoría del empleado y añade
+        el bonus de 200€ para los meses de temporada alta (julio/agosto).
+        
+        Args:
+            id_empleado (int): ID del empleado.
+            mes (str): Mes en formato YYYY-MM.
+            horas_extra (int): Número de horas extra realizadas.
+            descuentos (float): Descuentos a aplicar en euros.
+            
+        Returns:
+            float: Total neto de la nómina en euros.
+            
+        Raises:
+            DatosInvalidosError: Si el empleado no existe.
+        """
         try:
             empleado = self.obtener_empleado(id_empleado)
             if not empleado:
@@ -117,7 +187,17 @@ class AdminController:
             raise
 
     def obtener_nominas(self, id_empleado=None):
-        """Devuelve las nóminas de un empleado o todas."""
+        """
+        Devuelve las nóminas de un empleado o todas las del sistema.
+        
+        Utiliza JOIN con empleados para incluir el nombre en los resultados.
+        
+        Args:
+            id_empleado (int, optional): ID del empleado. Si es None devuelve todas.
+            
+        Returns:
+            list: Lista de nóminas ordenadas por mes descendente.
+        """
         try:
             if id_empleado:
                 query = """
