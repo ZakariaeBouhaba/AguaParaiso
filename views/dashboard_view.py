@@ -7,20 +7,23 @@ import customtkinter as ctk
 from controllers.reporting_controller import ReportingController
 from controllers.evento_controller import EventoController
 from utils.logger import Logger
+from config.settings import Settings
 
 
 class DashboardView(ctk.CTk):
-    """Ventana principal del sistema."""
+    """Ventana principal del sistema ERP AguaParaíso."""
 
     def __init__(self, usuario):
         super().__init__()
         self.__usuario = usuario
         self.__reporting = ReportingController()
         self.__eventos = EventoController()
+        self.__intervalo = Settings.intervalo_eventos() * 1000
 
         self.__configurar_ventana()
         self.__construir_ui()
-        self.__actualizar_datos()
+        self.after(100, self.__mostrar_home)
+        self.after(self.__intervalo, self.__ciclo_eventos)
 
     def __configurar_ventana(self):
         self.title(f"AguaParaíso — {self.__usuario['rol']}")
@@ -64,9 +67,6 @@ class DashboardView(ctk.CTk):
         )
         self.__frame_contenido.pack(side="right", fill="both", expand=True, padx=(10, 0))
 
-        # Mostrar home por defecto
-        self.after(100, self.__mostrar_home)
-
     def __construir_sidebar(self, parent):
         sidebar = ctk.CTkFrame(
             parent, width=200, fg_color="white",
@@ -99,7 +99,6 @@ class DashboardView(ctk.CTk):
                 command=comando
             ).pack(fill="x", padx=10, pady=2)
 
-        # Botón cerrar sesión
         ctk.CTkButton(
             sidebar,
             text="🚪 Cerrar sesión",
@@ -137,8 +136,11 @@ class DashboardView(ctk.CTk):
 
     def __mostrar_home(self):
         self.__limpiar_contenido()
-        resumen = self.__reporting.resumen_dia()
-        eventos = self.__eventos.obtener_eventos_activos()
+        try:
+            resumen = self.__reporting.resumen_dia()
+            eventos = self.__eventos.obtener_eventos_activos()
+        except Exception:
+            return
 
         ctk.CTkLabel(
             self.__frame_contenido,
@@ -193,8 +195,17 @@ class DashboardView(ctk.CTk):
                     text_color="#BA4A00"
                 ).pack(padx=15, pady=8, anchor="w")
 
-    def __actualizar_datos(self):
-        self.after(30000, self.__actualizar_datos)
+    def __ciclo_eventos(self):
+        """Motor de eventos automático — se ejecuta cada X minutos."""
+        try:
+            evento = self.__eventos.generar_evento_aleatorio()
+            if evento:
+                Logger.warning(f"Evento automático generado: {evento.tipo} — {evento.descripcion}")
+                self.__mostrar_home()
+        except Exception as e:
+            Logger.error(f"Error en ciclo de eventos: {e}")
+        finally:
+            self.after(self.__intervalo, self.__ciclo_eventos)
 
     def __abrir_taquilla(self):
         self.__limpiar_contenido()
