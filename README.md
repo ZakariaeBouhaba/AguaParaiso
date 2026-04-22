@@ -3,7 +3,7 @@
 Sistema ERP para la gestión integral de un parque acuático temático.
 Desarrollado como proyecto final del módulo de Programación.
 
-**Instituto Tecnológico Granada · 2026**
+**Instituto Tecnológico Granada · 2026**  
 **Autor: Zakariae Bouhaba**
 
 ---
@@ -12,7 +12,7 @@ Desarrollado como proyecto final del módulo de Programación.
 
 ### 1. Clonar el repositorio
 ```bash
-git clone <url-repositorio>
+git clone https://github.com/ZakariaeBouhaba/AguaParaiso.git
 cd AguaParaiso
 ```
 
@@ -91,7 +91,7 @@ El sistema sigue el patrón **MVC** con separación total entre capas:
 - **Taquilla** — Venta de tickets con IVA 10% y localizador UUID
 - **Administrativo** — RRHH, altas/bajas, cálculo de nóminas con IRPF
 - **Logística** — Control de inventario con alertas de stock
-- **Eventos** — Motor de eventos aleatorios con probabilidades
+- **Eventos** — Motor de eventos aleatorios automático cada 5 minutos
 - **Sanitario** — Registro de incidentes sanitarios
 - **Zonas** — Estado y aforo de las 6 zonas del parque
 - **Reporting** — Estadísticas con JOINs, GROUP BY, SUM, AVG
@@ -99,17 +99,3 @@ El sistema sigue el patrón **MVC** con separación total entre capas:
 ---
 
 ## 📁 Estructura del proyecto
-
-
----
-
-## ⚙️ Stack tecnológico
-
-| Tecnología | Versión | Uso |
-|-----------|---------|-----|
-| Python | 3.10+ | Lenguaje principal |
-| CustomTkinter | 5.2.2 | Interfaz gráfica |
-| SQLite3 | Incluido | Base de datos |
-| bcrypt | 5.0.0 | Hash de contraseñas |
-| python-dotenv | 1.2.2 | Variables de entorno |
-| pytest | 9.0.3 | Tests unitarios |
