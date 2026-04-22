@@ -10,6 +10,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from utils.logger import Logger
+from utils.security import Security
 
 
 def reset_db():
@@ -21,7 +22,11 @@ def reset_db():
     ruta_triggers = os.path.join(base, 'database', 'sql', 'triggers.sql')
     ruta_seed = os.path.join(base, 'database', 'sql', 'seed.sql')
 
-    print("⚠️  Reseteando base de datos AguaParaíso...")
+    # Crear carpetas necesarias si no existen
+    os.makedirs(os.path.join(base, 'data'), exist_ok=True)
+    os.makedirs(os.path.join(base, 'logs'), exist_ok=True)
+
+    print("Reseteando base de datos AguaParaiso...")
 
     try:
         # Eliminar BD existente
@@ -49,7 +54,7 @@ def reset_db():
         conn.close()
 
         # Regenerar contraseñas
-        from utils.security import Security
+        print("Configurando contrasenas...")
         from database.connection import Database
         db = Database.obtener_instancia()
         h = Security.hashear_password('admin123')
@@ -62,17 +67,17 @@ def reset_db():
             )
 
         Logger.info("Base de datos reseteada correctamente")
-        print("✅ Base de datos reseteada correctamente.")
-        print("Todos los usuarios tienen contraseña: admin123")
+        print("Base de datos reseteada correctamente.")
+        print("Todos los usuarios tienen contrasena: admin123")
 
     except Exception as e:
         Logger.error(f"Error al resetear BD: {e}")
-        print(f"❌ Error: {e}")
+        print(f"Error: {e}")
 
 
 if __name__ == "__main__":
-    confirmacion = input("⚠️  ¿Estás seguro? Se perderán todos los datos. (s/n): ")
+    confirmacion = input("Estas seguro? Se perderan todos los datos. (s/n): ")
     if confirmacion.lower() == 's':
         reset_db()
     else:
-        print("Operación cancelada.")
+        print("Operacion cancelada.")
