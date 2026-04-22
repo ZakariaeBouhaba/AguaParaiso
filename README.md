@@ -1,14 +1,21 @@
-# 🌊 AguaParaíso — SmartPark Pro
+# AguaParaiso — SmartPark Pro
 
-Sistema ERP para la gestión integral de un parque acuático temático.
-Desarrollado como proyecto final del módulo de Programación.
+Sistema ERP para la gestion integral de un parque acuatico tematico.
+Desarrollado como proyecto final del modulo de Programacion.
 
-**Instituto Tecnológico Granada · 2026**  
+**Instituto Tecnologico Granada · 2026**
 **Autor: Zakariae Bouhaba**
 
 ---
 
-## 🚀 Instalación y ejecución
+## Requisitos previos
+
+- Python 3.10 o superior instalado
+- Git instalado
+
+---
+
+## Instalacion paso a paso
 
 ### 1. Clonar el repositorio
 ```bash
@@ -16,10 +23,19 @@ git clone https://github.com/ZakariaeBouhaba/AguaParaiso.git
 cd AguaParaiso
 ```
 
-### 2. Crear y activar entorno virtual
+### 2. Solo en Windows — habilitar scripts
+```bash
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+Escribe S y pulsa Enter para confirmar.
+
+### 3. Crear entorno virtual
 ```bash
 python -m venv venv
+```
 
+### 4. Activar entorno virtual
+```bash
 # Windows
 venv\Scripts\activate
 
@@ -27,31 +43,26 @@ venv\Scripts\activate
 source venv/bin/activate
 ```
 
-### 3. Instalar dependencias
+### 5. Instalar dependencias
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Configurar variables de entorno
-```bash
-cp .env.example .env
-```
-
-### 5. Inicializar base de datos
+### 6. Inicializar base de datos (solo la primera vez)
 ```bash
 python scripts/init_db.py
 ```
 
-### 6. Ejecutar el sistema
+### 7. Ejecutar el sistema
 ```bash
 python main.py
 ```
 
 ---
 
-## 🔑 Credenciales de prueba
+## Credenciales de acceso
 
-| Usuario | Contraseña | Rol |
+| Usuario | Contrasena | Rol |
 |---------|-----------|-----|
 | admin | admin123 | Admin |
 | maria.taquilla | admin123 | Taquillero |
@@ -62,40 +73,46 @@ python main.py
 
 ---
 
-## 🏗️ Arquitectura
-
-El sistema sigue el patrón **MVC** con separación total entre capas:
+## Arquitectura MVC
 
 - `models/` — Clases Python con POO, herencia y encapsulamiento
-- `controllers/` — Lógica de negocio
-- `views/` — Interfaz gráfica CustomTkinter
-- `database/` — Conexión SQLite3 con Singleton
+- `controllers/` — Logica de negocio
+- `views/` — Interfaz grafica CustomTkinter
+- `database/` — Conexion SQLite3 con Singleton
 - `utils/` — Logger, Security, Validators, Generators, EventsEngine
-- `exceptions/` — Jerarquía de excepciones custom
+- `exceptions/` — Jerarquia de excepciones custom
 
 ---
 
-## 🗄️ Base de datos
+## Base de datos
 
-9 tablas SQLite3 con integridad referencial:
-`zonas`, `atracciones`, `empleados`, `usuarios`, `visitantes`, `tickets`, `inventario`, `eventos`, `nominas`
+9 tablas SQLite3: zonas, atracciones, empleados, usuarios, visitantes, tickets, inventario, eventos, nominas
 
-7 triggers automáticos para garantizar la consistencia del sistema.
-
----
-
-## 🎟️ Módulos del sistema
-
-- **Login** — Autenticación con bcrypt, bloqueo tras 3 intentos
-- **Dashboard** — Panel de control con resumen en tiempo real
-- **Taquilla** — Venta de tickets con IVA 10% y localizador UUID
-- **Administrativo** — RRHH, altas/bajas, cálculo de nóminas con IRPF
-- **Logística** — Control de inventario con alertas de stock
-- **Eventos** — Motor de eventos aleatorios automático cada 5 minutos
-- **Sanitario** — Registro de incidentes sanitarios
-- **Zonas** — Estado y aforo de las 6 zonas del parque
-- **Reporting** — Estadísticas con JOINs, GROUP BY, SUM, AVG
+7 triggers automaticos para garantizar la consistencia del sistema.
 
 ---
 
-## 📁 Estructura del proyecto
+## Modulos del sistema
+
+- Login — Autenticacion con bcrypt, bloqueo tras 3 intentos
+- Dashboard — Panel de control con resumen en tiempo real
+- Taquilla — Venta de tickets con IVA 10% y localizador UUID
+- Administrativo — RRHH, altas/bajas, nominas con IRPF
+- Logistica — Control de inventario con alertas de stock
+- Eventos — Motor de eventos aleatorios automatico cada 5 minutos
+- Sanitario — Registro de incidentes sanitarios
+- Zonas — Estado y aforo de las 6 zonas del parque
+- Reporting — Estadisticas con JOINs, GROUP BY, SUM, AVG
+
+---
+
+## Stack tecnologico
+
+| Tecnologia | Version | Uso |
+|-----------|---------|-----|
+| Python | 3.10+ | Lenguaje principal |
+| CustomTkinter | 5.2.2 | Interfaz grafica |
+| SQLite3 | Incluido | Base de datos |
+| bcrypt | 5.0.0 | Hash de contrasenas |
+| python-dotenv | 1.2.2 | Variables de entorno |
+| pytest | 9.0.3 | Tests unitarios |
