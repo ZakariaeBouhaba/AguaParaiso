@@ -142,7 +142,6 @@ class TestEventoController:
         assert isinstance(eventos, list)
 
     def test_generar_evento_aleatorio(self):
-        # Puede devolver None si no se genera evento
         resultado = self.controller.generar_evento_aleatorio()
         assert resultado is None or hasattr(resultado, 'tipo')
 
@@ -174,3 +173,11 @@ class TestReportingController:
         assert 'total_ingresos' in resumen
         assert 'eventos_activos' in resumen
         assert 'zonas_abiertas' in resumen
+
+    def test_visitantes_por_tipo(self):
+        datos = self.controller.visitantes_por_tipo()
+        assert isinstance(datos, list)
+
+    def test_historico_ingresos_por_dia(self):
+        datos = self.controller.historico_ingresos_por_dia()
+        assert isinstance(datos, list)

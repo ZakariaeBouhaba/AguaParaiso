@@ -173,6 +173,54 @@ class ReportingController:
             Logger.error(f"Error al filtrar empleados: {e}")
             raise
 
+    def visitantes_por_tipo(self):
+        """
+        Devuelve las ventas agrupadas por tipo de visitante.
+        
+        Utiliza SUM y AVG con GROUP BY para calcular el total
+        e importe medio por cada tipo de visitante.
+        
+        Returns:
+            list: Lista con tipo de visitante, cantidad, total y media.
+        """
+        try:
+            query = """
+                SELECT tipo_visitante, COUNT(*) as cantidad,
+                       SUM(precio_total) as total,
+                       AVG(precio_total) as media
+                FROM tickets
+                GROUP BY tipo_visitante
+                ORDER BY cantidad DESC
+            """
+            return self.__db.consultar(query)
+        except Exception as e:
+            Logger.error(f"Error al obtener visitantes: {e}")
+            raise
+
+    def historico_ingresos_por_dia(self):
+        """
+        Devuelve el histórico de ingresos agrupados por día.
+        
+        Utiliza SUM y GROUP BY sobre la fecha para obtener
+        el total de ingresos de cada día del histórico.
+        
+        Returns:
+            list: Lista con fecha, cantidad de tickets y total de ingresos.
+        """
+        try:
+            query = """
+                SELECT DATE(fecha) as fecha,
+                       COUNT(*) as cantidad,
+                       SUM(precio_total) as total
+                FROM tickets
+                GROUP BY DATE(fecha)
+                ORDER BY fecha DESC
+            """
+            return self.__db.consultar(query)
+        except Exception as e:
+            Logger.error(f"Error al obtener histórico: {e}")
+            raise
+
     def resumen_dia(self, fecha=None):
         """
         Genera un resumen completo del día con las métricas principales.
