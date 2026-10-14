@@ -28,3 +28,5 @@ build/
 .pytest_cache/
 .coverage
 htmlcov/
+# Entorno virtual alternativo
+.venv/
