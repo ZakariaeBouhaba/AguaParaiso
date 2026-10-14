@@ -323,3 +323,5 @@ INSERT INTO nominas (id_empleado, mes, sueldo_base, horas_extra, bonus, descuent
 (17, '2025-07', 1900.00, 4, 200.00, 0.00, 20.0, 'Fijo', 1708.80),
 -- Manuel Limpiador Junior: (1050 + 0 + 200) * 0.85 = 1250 * 0.85 = 1062.50
 (19, '2025-07', 1050.00, 0, 200.00, 0.00, 15.0, 'Fijo', 1062.50);
+-- Asignar zona a los tickets de ejemplo
+UPDATE tickets SET id_zona = (SELECT id_zona FROM zonas ORDER BY id_zona LIMIT 1) WHERE id_zona IS NULL;

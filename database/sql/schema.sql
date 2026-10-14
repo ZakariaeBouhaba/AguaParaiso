@@ -95,8 +95,10 @@ CREATE TABLE IF NOT EXISTS tickets (
     fecha TEXT NOT NULL DEFAULT (datetime('now')),
     id_empleado INTEGER NOT NULL,
     id_visitante INTEGER,
+    id_zona INTEGER,
     FOREIGN KEY (id_empleado) REFERENCES empleados(id_empleado) ON DELETE RESTRICT,
-    FOREIGN KEY (id_visitante) REFERENCES visitantes(id_visitante) ON DELETE SET NULL
+    FOREIGN KEY (id_visitante) REFERENCES visitantes(id_visitante) ON DELETE SET NULL,
+    FOREIGN KEY (id_zona) REFERENCES zonas(id_zona) ON DELETE SET NULL
 );
 
 -- ============================================

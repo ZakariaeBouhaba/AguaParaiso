@@ -26,22 +26,22 @@ class TestTaquillaController:
         self.controller = TaquillaController()
 
     def test_calcular_precio_normal_adulto(self):
-        base, total = self.controller.calcular_precio("Normal", "Adulto")
+        base, total, _ = self.controller.calcular_precio("Normal", "Adulto")
         assert base == 25.00
         assert total == 27.50
 
     def test_calcular_precio_premium_nino(self):
-        base, total = self.controller.calcular_precio("Premium", "Nino")
+        base, total, _ = self.controller.calcular_precio("Premium", "Nino")
         assert base == 28.00
         assert total == 30.80
 
     def test_calcular_precio_con_fast_pass(self):
-        base, total = self.controller.calcular_precio("Normal", "Adulto", fast_pass=True)
+        base, total, _ = self.controller.calcular_precio("Normal", "Adulto", fast_pass=True)
         assert base == 53.00
         assert total == 58.30
 
     def test_vender_ticket(self):
-        ticket = self.controller.vender_ticket("Normal", "Adulto", 1)
+        ticket = self.controller.vender_ticket("Normal", "Adulto", 1, "Visitante de prueba", 1)
         assert ticket['localizador'].startswith("AGP-")
         assert ticket['precio_total'] == 27.50
 
